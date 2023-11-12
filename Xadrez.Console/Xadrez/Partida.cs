@@ -103,8 +103,8 @@ namespace Xadrez.ConsoleApp.Xadrez
         {
             Peca peca1 = new Torre(cor, Tabuleiro);
             Peca peca2 = new Torre(cor, Tabuleiro);
-            Posicao posicao1 = new(linha: cor == Cor.Branca ? 8 : 1, coluna: 'a');
-            Posicao posicao2 = new(linha: cor == Cor.Branca ? 8 : 1, coluna: 'h');
+            Posicao posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'a');
+            Posicao posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'h');
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
@@ -114,8 +114,8 @@ namespace Xadrez.ConsoleApp.Xadrez
         {
             Peca peca1 = new Cavalo(cor, Tabuleiro);
             Peca peca2 = new Cavalo(cor, Tabuleiro);
-            Posicao posicao1 = new(linha: cor == Cor.Branca ? 8 : 1, coluna: 'b');
-            Posicao posicao2 = new(linha: cor == Cor.Branca ? 8 : 1, coluna: 'g');
+            Posicao posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'b');
+            Posicao posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'g');
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
@@ -125,8 +125,8 @@ namespace Xadrez.ConsoleApp.Xadrez
         {
             Peca peca1 = new Bispo(cor, Tabuleiro);
             Peca peca2 = new Bispo(cor, Tabuleiro);
-            Posicao posicao1 = new(linha: cor == Cor.Branca ? 8 : 1, coluna: 'c');
-            Posicao posicao2 = new(linha: cor == Cor.Branca ? 8 : 1, coluna: 'f');
+            Posicao posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'c');
+            Posicao posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'f');
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
@@ -135,7 +135,7 @@ namespace Xadrez.ConsoleApp.Xadrez
         private void ColocarRei(Cor cor = Cor.Branca)
         {
             Peca peca = new Rei(cor, Tabuleiro);
-            Posicao posicao = new(linha: cor == Cor.Branca ? 8 : 1, coluna: 'd');
+            Posicao posicao = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'e');
 
             Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
         }
@@ -143,7 +143,7 @@ namespace Xadrez.ConsoleApp.Xadrez
         private void ColocarDama(Cor cor = Cor.Branca)
         {
             Peca peca = new Dama(cor, Tabuleiro);
-            Posicao posicao = new(linha: cor == Cor.Branca ? 8 : 1, coluna: 'e');
+            Posicao posicao = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'd');
 
             Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
         }
@@ -153,7 +153,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             for (char i = 'a'; i < 'i'; i++)
             {
                 Peca peca = new Peao(cor, Tabuleiro);
-                Posicao posicao = new Posicao(linha: cor == Cor.Branca ? 7 : 2, coluna: i);
+                Posicao posicao = new(linha: cor == Cor.Branca ? 2 : 7, coluna: i);
                 Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
             }
         }

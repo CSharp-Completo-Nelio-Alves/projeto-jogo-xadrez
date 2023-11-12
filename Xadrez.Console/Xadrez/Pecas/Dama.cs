@@ -10,6 +10,11 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
         {
         }
 
+        public override bool[,] RetornarMovimentosPossiveis()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString() => "D";
     }
 }
