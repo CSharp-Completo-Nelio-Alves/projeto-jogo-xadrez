@@ -22,5 +22,11 @@
 
             return _pecas[posicao.Linha, posicao.Coluna];
         }
+
+        public void ColocarPeca(Peca peca, Posicao posicao)
+        {
+            _pecas[posicao.Linha, posicao.Coluna] = peca;
+            peca.Posicao = posicao;
+        }
     }
 }
