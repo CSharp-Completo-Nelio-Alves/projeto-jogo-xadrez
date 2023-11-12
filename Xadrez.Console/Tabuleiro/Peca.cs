@@ -15,7 +15,22 @@ namespace Xadrez.ConsoleApp.Tabuleiro
             Tabuleiro = tabuleiro;
         }
 
+        public bool ValidarMovimento(Posicao posicaoDestino)
+        {
+            if (!Tabuleiro.ValidarPosicao(posicaoDestino))
+                return false;
+
+            Peca peca = Tabuleiro.ObterPeca(posicaoDestino);
+
+            if (peca is not null && peca.Cor == Cor)
+                return false;
+
+            return true;
+        }
+
         public void IncrementarMovimento() => QuantidadeMovimento++;
+
+        public abstract bool[,] RetornarMovimentosPossiveis();
 
         #region Métodos de Comparação
 
