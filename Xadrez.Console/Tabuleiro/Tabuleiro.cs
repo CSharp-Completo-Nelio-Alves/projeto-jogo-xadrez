@@ -53,6 +53,19 @@ namespace Xadrez.ConsoleApp.Tabuleiro
             peca.Posicao = posicao;
         }
 
+        public Peca RetirarPeca(Posicao posicao)
+        {
+            if (!VerificarSeExistePeca(posicao))
+                return null;
+
+            Peca peca = ObterPeca(posicao);
+
+            peca.Posicao = null;
+            _pecas[posicao.Linha, posicao.Coluna] = null;
+
+            return peca;
+        }
+
         #region Métodos de Validação
 
         public bool ValidarPosicao(Posicao posicao) =>

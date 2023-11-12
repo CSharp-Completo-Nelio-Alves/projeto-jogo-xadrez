@@ -1,7 +1,7 @@
 ﻿using Xadrez.ConsoleApp.Tabuleiro;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
 
-namespace Xadrez.ConsoleApp.Xadrez
+namespace Xadrez.ConsoleApp.Xadrez.Pecas
 {
     internal class Torre : Peca
     {

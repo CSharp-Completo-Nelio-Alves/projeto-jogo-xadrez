@@ -1,5 +1,4 @@
 ﻿using Xadrez.ConsoleApp.Tabuleiro.Enums;
-using Xadrez.ConsoleApp.Xadrez;
 
 namespace Xadrez.ConsoleApp.Tabuleiro
 {
@@ -15,6 +14,8 @@ namespace Xadrez.ConsoleApp.Tabuleiro
             Cor = cor;
             Tabuleiro = tabuleiro;
         }
+
+        public void IncrementarMovimento() => QuantidadeMovimento++;
 
         #region Métodos de Comparação
 
