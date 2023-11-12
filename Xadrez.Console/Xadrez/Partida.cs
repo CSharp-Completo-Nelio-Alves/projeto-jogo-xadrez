@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using Xadrez.ConsoleApp.Tabuleiro;
+﻿using Xadrez.ConsoleApp.Tabuleiro;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
+using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
 using Xadrez.ConsoleApp.Xadrez.Pecas;
 
 namespace Xadrez.ConsoleApp.Xadrez
@@ -10,6 +10,7 @@ namespace Xadrez.ConsoleApp.Xadrez
         public Tabuleiro.Tabuleiro Tabuleiro { get; private set; }
         public int Turno { get; private set; }
         public Cor JogadorAtual { get; set; }
+        public bool Finalizada { get; private set; }
 
         public Partida()
         {
@@ -20,13 +21,47 @@ namespace Xadrez.ConsoleApp.Xadrez
             ColocarPecas();
         }
 
+        public Posicao ObterPosicao(bool origem = true)
+        {
+            Console.Write($"Posição de {(origem ? "origem" : "destino")}: ");
+            string userInput = Console.ReadLine();
+
+            char coluna = userInput[0];
+            int linha = int.Parse(userInput[1].ToString());
+
+            return new Posicao(linha, coluna);
+        }
+
         public void ExecutarMovimento(Posicao origem, Posicao destino)
         {
             var posicaoOrigemTabuleiro = origem?.ConverterParaPosicaoTabuleiro();
             var posicaoDestinoTabuleiro = destino?.ConverterParaPosicaoTabuleiro();
 
-            var pecaOrigem = Tabuleiro.RetirarPeca(posicaoOrigemTabuleiro);
-            var pecaDestino = Tabuleiro.RetirarPeca(posicaoDestinoTabuleiro);
+            Peca pecaOrigem;
+
+            try
+            {
+                pecaOrigem = Tabuleiro.RetirarPeca(posicaoOrigemTabuleiro);
+            }
+            catch (TabuleiroException ex)
+            {
+                var exception = new TabuleiroException($"Erro ao retirar peça da origem: {ex.Message}", ex);
+
+                throw exception;
+            }
+
+            Peca pecaDestino;
+
+            try
+            {
+                pecaDestino = Tabuleiro.RetirarPeca(posicaoDestinoTabuleiro);
+            }
+            catch (TabuleiroException ex)
+            {
+                var exception = new TabuleiroException($"Erro ao retirar peça do destino: {ex.Message}", ex);
+                
+                throw exception;
+            }
 
             Tabuleiro.ColocarPeca(pecaOrigem, posicaoDestinoTabuleiro);
             pecaOrigem.IncrementarMovimento();
