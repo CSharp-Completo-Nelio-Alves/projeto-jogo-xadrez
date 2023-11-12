@@ -16,7 +16,7 @@ namespace Xadrez.ConsoleApp.Tabuleiro
             Tabuleiro = tabuleiro;
         }
 
-        #region Compare Methods
+        #region Métodos de Comparação
 
         public override int GetHashCode()
         {

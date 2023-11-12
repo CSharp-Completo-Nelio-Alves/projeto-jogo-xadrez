@@ -1,4 +1,6 @@
-﻿namespace Xadrez.ConsoleApp.Tabuleiro
+﻿using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
+
+namespace Xadrez.ConsoleApp.Tabuleiro
 {
     internal class Tabuleiro
     {
@@ -20,13 +22,42 @@
             if (posicao is null)
                 return null;
 
+            if (!ValidarPosicao(posicao))
+                throw new TabuleiroException("Posição inválida");
+
             return _pecas[posicao.Linha, posicao.Coluna];
+        }
+
+        public bool VerificarSeExistePeca(Posicao posicao)
+        {
+            if (posicao is null)
+                throw new TabuleiroException("Posição não informada");
+
+            if (!ValidarPosicao(posicao))
+                throw new TabuleiroException("Posição inválida");
+
+            Peca peca = ObterPeca(posicao);
+
+            return peca is not null;
         }
 
         public void ColocarPeca(Peca peca, Posicao posicao)
         {
+            if (peca is null)
+                throw new TabuleiroException("Peça não informada");
+
+            if (VerificarSeExistePeca(posicao))
+                throw new TabuleiroException("Já existe uma peça na posição informada");
+
             _pecas[posicao.Linha, posicao.Coluna] = peca;
             peca.Posicao = posicao;
         }
+
+        #region Métodos de Validação
+
+        public bool ValidarPosicao(Posicao posicao) =>
+            posicao.Linha >= 0 && posicao.Linha < Linha && posicao.Coluna >= 0 && posicao.Coluna < Coluna;
+
+        #endregion
     }
 }

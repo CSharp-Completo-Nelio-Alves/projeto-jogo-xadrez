@@ -10,7 +10,7 @@ Peca rei = new Rei(Cor.Branca, tabuleiro);
 Torre torre2 = new(Cor.Branca, tabuleiro);
 
 tabuleiro.ColocarPeca(torre, new Posicao());
-tabuleiro.ColocarPeca(torre2, new Posicao(5, 2));
+tabuleiro.ColocarPeca(torre2, new Posicao());
 tabuleiro.ColocarPeca(rei, new Posicao(0, 5));
 
 Tela.ImprimirTabuleiro(tabuleiro);
