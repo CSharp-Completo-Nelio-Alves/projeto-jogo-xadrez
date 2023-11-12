@@ -1,4 +1,4 @@
-﻿namespace Xadrez.Console.Tabuleiro
+﻿namespace Xadrez.ConsoleApp.Tabuleiro
 {
     internal class Posicao
     {

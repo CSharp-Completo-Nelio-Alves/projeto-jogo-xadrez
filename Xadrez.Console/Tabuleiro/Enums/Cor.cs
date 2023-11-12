@@ -1,4 +1,4 @@
-﻿namespace Xadrez.Console.Tabuleiro.Enums
+﻿namespace Xadrez.ConsoleApp.Tabuleiro.Enums
 {
     internal enum Cor
     {
