@@ -1,5 +1,6 @@
 ﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
+using Xadrez.ConsoleApp.Xadrez;
 
 namespace Xadrez.ConsoleApp
 {
@@ -31,6 +32,35 @@ namespace Xadrez.ConsoleApp
             EscreverIdentificacaoColuna();
         }
 
+        public static void ImprimirCabecalho(Partida partida)
+        {
+            Console.BackgroundColor = ConsoleColor.DarkGray;
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+
+            Console.WriteLine("Partida de Xadrez\n");
+
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+
+            Console.WriteLine($"Turno {partida.Turno}");
+            Console.WriteLine($"Jogador Atual: Peças {partida.JogadorAtual}\n");
+
+            Console.ResetColor();
+        }
+
+        public static void ImprimirMensagem(string mensagem, bool ehError = false)
+        {
+            if (ehError)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Cyan;
+
+            Console.WriteLine(mensagem);
+
+            Console.ResetColor();
+        }
+
         private static void EscreverIdentificacaoLinha(int linhaTabuleiro)
         {
             var linhaXadrez = 8 - linhaTabuleiro;
@@ -50,13 +80,33 @@ namespace Xadrez.ConsoleApp
                 Console.BackgroundColor = ConsoleColor.DarkGray;
 
             if (peca is null)
+            {
                 Console.ForegroundColor = ConsoleColor.Gray;
-            else if (peca.Cor == Cor.Preta)
-                Console.ForegroundColor= ConsoleColor.Black;
+                Console.Write(" - ");
+            }
             else
-                Console.ForegroundColor = ConsoleColor.White;
+            {
+                ConsoleColor corTextoPeca = peca.Cor == Cor.Preta ? ConsoleColor.Black : ConsoleColor.White;
 
-            Console.Write($"{(peca is null ? " - " : marcarPeca ? $"[{peca}]" : $" {peca} ")}");
+                Console.ForegroundColor = corTextoPeca;
+
+                if (marcarPeca)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+
+                    Console.Write("[");
+
+                    Console.ForegroundColor = corTextoPeca;
+
+                    Console.Write(peca);
+
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+
+                    Console.Write("]");
+                }
+                else
+                    Console.Write($" {peca} ");
+            }
 
             Console.ResetColor();
         }

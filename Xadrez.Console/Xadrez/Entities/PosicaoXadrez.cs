@@ -1,4 +1,4 @@
-﻿using Xadrez.ConsoleApp.Tabuleiro.Entities;
+﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 
 namespace Xadrez.ConsoleApp.Xadrez.Entities
 {
@@ -19,15 +19,21 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities
             Coluna = coluna.ToString().ToLower()[0];
         }
 
-        public Posicao ConverterParaPosicaoTabuleiro()
+        public PosicaoXadrez(Tab.Posicao posicao)
+        {
+            Linha = 8 - posicao.Linha;
+            Coluna = (char)('a' + posicao.Coluna);
+        }
+
+        public Tab.Posicao ConverterParaPosicaoTabuleiro()
         {
             var linha = 8 - Linha;
             var coluna = Coluna - 'a';
 
-            return new Posicao(linha, coluna);
+            return new Tab.Posicao(linha, coluna);
         }
 
-        public override string ToString() => $"{Linha}, {Coluna.ToString().ToUpper()}";
+        public override string ToString() => $"{Coluna.ToString().ToUpper()}{Linha}";
 
         #region Métodos de Comparação
 

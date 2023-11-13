@@ -35,6 +35,19 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
             return peca is not null && peca.Cor != Cor;
         }
 
+        public bool ValidarSeExisteMovimentoPossivel()
+        {
+            var movimentosPossiveis = RetornarMovimentosPossiveis();
+
+            foreach (var movimentoPossivel in movimentosPossiveis)
+            {
+                if (movimentoPossivel)
+                    return true;
+            }
+
+            return false;
+        }
+
         public void IncrementarMovimento() => QuantidadeMovimento++;
 
         public abstract bool[,] RetornarMovimentosPossiveis();

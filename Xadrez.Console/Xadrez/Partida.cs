@@ -3,6 +3,7 @@ using Xadrez.ConsoleApp.Tabuleiro.Enums;
 using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
 using Xadrez.ConsoleApp.Xadrez.Entities.Pecas;
 using Xadrez.ConsoleApp.Xadrez.Entities;
+using Xadrez.ConsoleApp.Tabuleiro.Entities;
 
 namespace Xadrez.ConsoleApp.Xadrez
 {
@@ -10,7 +11,7 @@ namespace Xadrez.ConsoleApp.Xadrez
     {
         public Tab.Tabuleiro Tabuleiro { get; private set; }
         public int Turno { get; private set; }
-        public Cor JogadorAtual { get; set; }
+        public Cor JogadorAtual { get; private set; }
         public bool Finalizada { get; private set; }
 
         public Partida()
@@ -22,18 +23,67 @@ namespace Xadrez.ConsoleApp.Xadrez
             ColocarPecas();
         }
 
-        public PosicaoXadrez ObterPosicao(bool origem = true)
+        public void RealizarJogada()
         {
-            Console.Write($"Posição de {(origem ? "origem" : "destino")}: ");
-            string userInput = Console.ReadLine();
+            var posicaoOrigem = ObterPosicao();
+            var pecaSelecionada = Tabuleiro.ObterPeca(posicaoOrigem.ConverterParaPosicaoTabuleiro());
 
-            char coluna = userInput[0];
-            int linha = int.Parse(userInput[1].ToString());
+            if (pecaSelecionada is null)
+                throw new TabuleiroException($"Não existe peça na posição {posicaoOrigem}");
 
-            return new PosicaoXadrez(linha, coluna);
+            ValidarPecaSelecionada(pecaSelecionada);
+
+            Console.Clear();
+
+            Tela.ImprimirCabecalho(this);
+            Tela.ImprimirTabuleiro(Tabuleiro, pecaSelecionada);
+
+            Console.WriteLine("\n");
+
+            var destino = ObterPosicao(origem: false);
+
+            ExecutarMovimento(posicaoOrigem, destino);
+
+            Turno++;
+            AlterarJogadorAtual();
         }
 
-        public void ExecutarMovimento(PosicaoXadrez origem, PosicaoXadrez destino)
+        private void AlterarJogadorAtual() => JogadorAtual = JogadorAtual == Cor.Branca ? Cor.Preta : Cor.Branca;
+
+        private void ValidarPecaSelecionada(Tab.Peca peca)
+        {
+            PosicaoXadrez posicaoXadrez = new(peca.Posicao);
+
+            if (!ValidarSePecaDoJogadorAtual(peca))
+                throw new TabuleiroException($"Você não pode selecionar a peça na posição {posicaoXadrez}");
+
+            if (!peca.ValidarSeExisteMovimentoPossivel())
+                throw new TabuleiroException($"Não existem movimentos possíveis para a peça na posição {posicaoXadrez}");
+        }
+
+        private bool ValidarSePecaDoJogadorAtual(Tab.Peca peca) => peca.Cor == JogadorAtual;
+
+        private PosicaoXadrez ObterPosicao(bool origem = true)
+        {
+            try
+            {
+                Console.Write($"Posição de {(origem ? "origem" : "destino")}: ");
+                string userInput = Console.ReadLine();
+
+                char coluna = userInput[0];
+                int linha = int.Parse(userInput[1].ToString());
+
+                return new PosicaoXadrez(linha, coluna);
+            }
+            catch (Exception ex)
+            {
+                var exception = new TabuleiroException("Necessário informar uma posição válida", ex);
+
+                throw exception;
+            }
+        }
+
+        private void ExecutarMovimento(PosicaoXadrez origem, PosicaoXadrez destino)
         {
             var posicaoOrigemTabuleiro = origem?.ConverterParaPosicaoTabuleiro();
             var posicaoDestinoTabuleiro = destino?.ConverterParaPosicaoTabuleiro();
