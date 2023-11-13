@@ -1,5 +1,4 @@
 ﻿using Xadrez.ConsoleApp;
-using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
 using Xadrez.ConsoleApp.Xadrez;
 

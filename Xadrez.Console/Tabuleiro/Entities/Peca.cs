@@ -28,6 +28,13 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
             return true;
         }
 
+        public bool ValidarSeExistePecaAdversaria(Posicao posicaoDestino)
+        {
+            Peca peca = Tabuleiro.ObterPeca(posicaoDestino);
+
+            return peca is not null && peca.Cor != Cor;
+        }
+
         public void IncrementarMovimento() => QuantidadeMovimento++;
 
         public abstract bool[,] RetornarMovimentosPossiveis();

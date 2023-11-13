@@ -14,25 +14,69 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
         {
             var movimentosPossiveis = new bool[Tabuleiro.Linha, Tabuleiro.Coluna];
 
-            // Movimento Vertical
-            for (int i = 0; i < Tabuleiro.Linha; i++)
+            MarcarMovimentosVerticalSuperior(movimentosPossiveis);
+            MarcarMovimentosVerticalInferior(movimentosPossiveis);
+            MarcarMovimentosHorizontalEsquerdo(movimentosPossiveis);
+            MarcarMovimentosHorizontalDireito(movimentosPossiveis);
+
+            return movimentosPossiveis;
+        }
+
+        private void MarcarMovimentosVerticalSuperior(bool[,] movimentosPossiveis)
+        {
+            for (int i = Posicao.Linha - 1; i >= 0; i--)
             {
                 Tab.Posicao posicao = new(i, Posicao.Coluna);
 
-                if (ValidarMovimento(posicao))
-                    movimentosPossiveis[posicao.Linha, posicao.Coluna] = true;
+                if (!TratarPosicaoAtual(movimentosPossiveis, posicao))
+                    break;
             }
+        }
 
-            // Movimento Horizontal
-            for (int i = 0; i < Tabuleiro.Coluna; i++)
+        private void MarcarMovimentosVerticalInferior(bool[,] movimentosPossiveis)
+        {
+            for (int i = Posicao.Linha + 1; i < Tabuleiro.Linha; i++)
+            {
+                Tab.Posicao posicao = new(i, Posicao.Coluna);
+
+                if (!TratarPosicaoAtual(movimentosPossiveis, posicao))
+                    break;
+            }
+        }
+
+        private void MarcarMovimentosHorizontalEsquerdo(bool[,] movimentosPossiveis)
+        {
+            for (int i = Posicao.Coluna - 1; i >= 0; i--)
             {
                 Tab.Posicao posicao = new(Posicao.Linha, i);
 
-                if (ValidarMovimento(posicao))
-                    movimentosPossiveis[posicao.Linha, posicao.Coluna] = true;
+                if (!TratarPosicaoAtual(movimentosPossiveis, posicao))
+                    break;
             }
+        }
 
-            return movimentosPossiveis;
+        private void MarcarMovimentosHorizontalDireito(bool[,] movimentosPossiveis)
+        {
+            for (int i = Posicao.Coluna + 1; i < Tabuleiro.Coluna; i++)
+            {
+                Tab.Posicao posicao = new(Posicao.Linha, i);
+
+                if (!TratarPosicaoAtual(movimentosPossiveis, posicao))
+                    break;
+            }
+        }
+
+        private bool TratarPosicaoAtual(bool[,] movimentosPossiveis, Tab.Posicao posicao)
+        {
+            if (!ValidarMovimento(posicao))
+                return false;
+
+            movimentosPossiveis[posicao.Linha, posicao.Coluna] = true;
+
+            if (ValidarSeExistePecaAdversaria(posicao))
+                return false;
+
+            return true;
         }
 
         public override string ToString() => "T";
