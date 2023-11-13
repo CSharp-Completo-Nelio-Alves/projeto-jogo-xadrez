@@ -32,7 +32,7 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
 
                     atualizarMovimentosPossiveis(posicao);
                 }
-                else
+                else if (i != Posicao.Linha)
                 {
                     Tab.Posicao posicao = new(i, Posicao.Coluna - 2);
 
