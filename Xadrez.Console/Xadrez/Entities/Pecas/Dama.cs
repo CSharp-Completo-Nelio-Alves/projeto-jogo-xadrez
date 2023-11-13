@@ -28,6 +28,10 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
             return movimentosPossiveis;
         }
 
+        public override string ToString() => "D";
+
+        #region Métodos para Tratar Marcação de Movimentos Possíveis
+
         private void MarcarMovimentoHorizontalEsquerdo(bool[,] movimentosPossiveis)
         {
             for (var i = Posicao.Coluna - 1; i >= 0; i--)
@@ -133,6 +137,6 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
             return true;
         }
 
-        public override string ToString() => "D";
+        #endregion
     }
 }

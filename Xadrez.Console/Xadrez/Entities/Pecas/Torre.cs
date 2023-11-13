@@ -22,6 +22,10 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
             return movimentosPossiveis;
         }
 
+        public override string ToString() => "T";
+
+        #region Métodos Privados para Tratar Movimentos Possíveis
+
         private void MarcarMovimentosVerticalSuperior(bool[,] movimentosPossiveis)
         {
             for (int i = Posicao.Linha - 1; i >= 0; i--)
@@ -79,6 +83,6 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
             return true;
         }
 
-        public override string ToString() => "T";
+        #endregion
     }
 }

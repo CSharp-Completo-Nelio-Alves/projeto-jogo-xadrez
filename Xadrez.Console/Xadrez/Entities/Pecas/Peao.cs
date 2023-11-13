@@ -18,7 +18,7 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
             var podeRealizarCaptura = true; // Só pode realizar captura nas posições adjacentes uma casa acima
             var totalCasasPermitidoMovimentar = QuantidadeMovimento == 0 ? 2 : 1;
 
-            // CUIDADO: As peças brancas inicial, na visão do tabuleiro, na casa de linha 8. Inverter lógicas a seguir se alterar para iniciar na casa 0
+            // CUIDADO: No começo da partida, na visão do tabuleiro, as peças brancas iniciam na casa de linha 7. Inverter lógicas a seguir se alterar para iniciar na casa 0
             int linhaAnaliseAtual = Cor == Cor.Branca ? Posicao.Linha - 1 : Posicao.Linha + 1;
 
             bool continuarMarcacao()
@@ -59,6 +59,23 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
             return movimentosPossiveis;
         }
 
+        public override bool ValidarMovimento(Posicao posicaoDestino)
+        {
+            if (!Tabuleiro.ValidarPosicao(posicaoDestino))
+                return false;
+
+            Peca peca = Tabuleiro.ObterPeca(posicaoDestino);
+
+            if (peca is not null)
+                return false;
+
+            return true;
+        }
+
+        public override string ToString() => "P";
+
+        #region Métodos Privados para Tratar Movimentos Possíveis
+
         private void TratarMovimentoCaptura(bool[,] movimentosPossiveis, Posicao posicaoDestino)
         {
             Tab.Posicao posicao = new(posicaoDestino.Linha, posicaoDestino.Coluna - 1);
@@ -76,19 +93,6 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
                 movimentosPossiveis[posicao.Linha, posicao.Coluna] = true;
         }
 
-        public override bool ValidarMovimento(Posicao posicaoDestino)
-        {
-            if (!Tabuleiro.ValidarPosicao(posicaoDestino))
-                return false;
-
-            Peca peca = Tabuleiro.ObterPeca(posicaoDestino);
-
-            if (peca is not null)
-                return false;
-
-            return true;
-        }
-
-        public override string ToString() => "P";
+        #endregion
     }
 }
