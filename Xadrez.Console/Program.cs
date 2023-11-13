@@ -19,11 +19,13 @@ while (!partida.Finalizada)
     }
     catch (TabuleiroException ex)
     {
+        Console.ResetColor();
         Console.Clear();
         Tela.ImprimirMensagem($"{ex.Message}\n", ehError: true);
     }
     catch (Exception ex)
     {
+        Console.ResetColor();
         Console.Clear();
         Tela.ImprimirMensagem($"\nUnexpected erro: {ex.Message}\n", ehError: true);
     }

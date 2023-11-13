@@ -8,6 +8,8 @@ namespace Xadrez.ConsoleApp.Xadrez
 {
     internal class Partida
     {
+        private readonly List<Tab.Peca> _pecasCapturada;
+
         public Tab.Tabuleiro Tabuleiro { get; private set; }
         public int Turno { get; private set; }
         public Cor JogadorAtual { get; private set; }
@@ -18,6 +20,8 @@ namespace Xadrez.ConsoleApp.Xadrez
             Tabuleiro = new Tab.Tabuleiro(linha: 8, coluna: 8);
             Turno = 1;
             JogadorAtual = Cor.Branca;
+
+            _pecasCapturada = new List<Tab.Peca>();
 
             ColocarPecas();
         }
@@ -55,6 +59,8 @@ namespace Xadrez.ConsoleApp.Xadrez
             Turno++;
             AlterarJogadorAtual();
         }
+
+        public IEnumerable<Tab.Peca> ObterPecasCapturadas(Cor cor) => _pecasCapturada.Where(p => p.Cor == cor);
 
         #region Métodos Auxiliares
 
@@ -101,21 +107,26 @@ namespace Xadrez.ConsoleApp.Xadrez
             if (pecaOrigem is null)
                 throw new TabuleiroException("Não existe peça na posição de origem");
 
-            Tab.Peca pecaDestino;
+            Tab.Peca pecaCapturada;
 
             try
             {
-                pecaDestino = Tabuleiro.RetirarPeca(posicaoDestinoTabuleiro);
+                pecaCapturada = Tabuleiro.RetirarPeca(posicaoDestinoTabuleiro);
             }
             catch (TabuleiroException ex)
             {
                 var exception = new TabuleiroException($"Erro ao retirar peça do destino: {ex.Message}", ex);
+
+                Tabuleiro.ColocarPeca(pecaOrigem, posicaoOrigemTabuleiro);
 
                 throw exception;
             }
 
             Tabuleiro.ColocarPeca(pecaOrigem, posicaoDestinoTabuleiro);
             pecaOrigem.IncrementarMovimento();
+
+            if (pecaCapturada is not null)
+                _pecasCapturada.Add(pecaCapturada);
         }
 
         #endregion

@@ -46,7 +46,11 @@ namespace Xadrez.ConsoleApp
             Console.WriteLine($"Turno {partida.Turno}");
             Console.WriteLine($"Jogador Atual: Peças {partida.JogadorAtual}\n");
 
+            Console.WriteLine("Peças Capturadas:\n");
             Console.ResetColor();
+
+            ImprimirPecasCapturadas(partida);
+            Console.WriteLine();
         }
 
         public static void ImprimirMensagem(string mensagem, bool ehError = false)
@@ -116,6 +120,37 @@ namespace Xadrez.ConsoleApp
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Console.Write($" A  B  C  D  E  F  G  H");
+
+            Console.ResetColor();
+        }
+
+        private static void ImprimirPecasCapturadas(Partida partida)
+        {
+            Console.BackgroundColor = ConsoleColor.DarkGray;
+
+            ConsoleColor corLabel = ConsoleColor.Yellow;
+
+            Console.ForegroundColor = corLabel;
+
+            Console.Write("Brancas: [");
+
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.Write(string.Join(',', partida.ObterPecasCapturadas(Cor.Branca)));
+
+            Console.ForegroundColor = corLabel;
+
+            Console.WriteLine("]");
+
+            Console.Write("Pretas: [");
+
+            Console.ForegroundColor = ConsoleColor.Black;
+
+            Console.Write(string.Join(',', partida.ObterPecasCapturadas(Cor.Preta).Select(p => p)));
+
+            Console.ForegroundColor = corLabel;
+
+            Console.WriteLine("]");
 
             Console.ResetColor();
         }
