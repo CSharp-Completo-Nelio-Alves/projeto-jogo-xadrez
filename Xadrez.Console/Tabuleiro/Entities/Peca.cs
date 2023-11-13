@@ -15,7 +15,7 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
             Tabuleiro = tabuleiro;
         }
 
-        public bool ValidarMovimento(Posicao posicaoDestino)
+        public virtual bool ValidarMovimento(Posicao posicaoDestino)
         {
             if (!Tabuleiro.ValidarPosicao(posicaoDestino))
                 return false;
