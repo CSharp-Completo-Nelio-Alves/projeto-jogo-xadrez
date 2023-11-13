@@ -3,7 +3,6 @@ using Xadrez.ConsoleApp.Tabuleiro.Enums;
 using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
 using Xadrez.ConsoleApp.Xadrez.Entities.Pecas;
 using Xadrez.ConsoleApp.Xadrez.Entities;
-using Xadrez.ConsoleApp.Tabuleiro.Entities;
 
 namespace Xadrez.ConsoleApp.Xadrez
 {
@@ -57,20 +56,9 @@ namespace Xadrez.ConsoleApp.Xadrez
             AlterarJogadorAtual();
         }
 
+        #region Métodos Auxiliares
+
         private void AlterarJogadorAtual() => JogadorAtual = JogadorAtual == Cor.Branca ? Cor.Preta : Cor.Branca;
-
-        private void ValidarPecaSelecionada(Tab.Peca peca)
-        {
-            PosicaoXadrez posicaoXadrez = new(peca.Posicao);
-
-            if (!ValidarSePecaDoJogadorAtual(peca))
-                throw new TabuleiroException($"Você não pode selecionar a peça na posição {posicaoXadrez}");
-
-            if (!peca.ValidarSeExisteMovimentoPossivel())
-                throw new TabuleiroException($"Não existem movimentos possíveis para a peça na posição {posicaoXadrez}");
-        }
-
-        private bool ValidarSePecaDoJogadorAtual(Tab.Peca peca) => peca.Cor == JogadorAtual;
 
         private PosicaoXadrez ObterPosicao(bool origem = true)
         {
@@ -129,6 +117,25 @@ namespace Xadrez.ConsoleApp.Xadrez
             Tabuleiro.ColocarPeca(pecaOrigem, posicaoDestinoTabuleiro);
             pecaOrigem.IncrementarMovimento();
         }
+
+        #endregion
+
+        #region Validações
+
+        private void ValidarPecaSelecionada(Tab.Peca peca)
+        {
+            PosicaoXadrez posicaoXadrez = new(peca.Posicao);
+
+            if (!ValidarSePecaDoJogadorAtual(peca))
+                throw new TabuleiroException($"Você não pode selecionar a peça na posição {posicaoXadrez}");
+
+            if (!peca.ValidarSeExisteMovimentoPossivel())
+                throw new TabuleiroException($"Não existem movimentos possíveis para a peça na posição {posicaoXadrez}");
+        }
+
+        private bool ValidarSePecaDoJogadorAtual(Tab.Peca peca) => peca.Cor == JogadorAtual;
+
+        #endregion
 
         #region Colocar Peças
 
