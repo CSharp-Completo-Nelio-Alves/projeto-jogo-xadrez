@@ -40,9 +40,18 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             Console.WriteLine("\n");
 
-            var destino = ObterPosicao(origem: false);
+            Tela.ImprimirMensagem($"Caso queira selecionar uma peça diferente, digite {posicaoOrigem} novamente.\n");
 
-            ExecutarMovimento(posicaoOrigem, destino);
+            var posicaoDestino = ObterPosicao(origem: false);
+
+            // Permite cancelar a seleção de uma peça atual
+            if (posicaoOrigem == posicaoDestino)
+                return;
+
+            if (!pecaSelecionada.ValidarSePodeMoverPara(posicaoDestino.ConverterParaPosicaoTabuleiro()))
+                throw new TabuleiroException($"A peça da posição {posicaoOrigem} não pode se mover para a posição {posicaoDestino}");
+
+            ExecutarMovimento(posicaoOrigem, posicaoDestino);
 
             Turno++;
             AlterarJogadorAtual();

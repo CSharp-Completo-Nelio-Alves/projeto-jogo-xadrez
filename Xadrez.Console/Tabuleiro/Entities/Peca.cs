@@ -48,6 +48,8 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
             return false;
         }
 
+        public bool ValidarSePodeMoverPara(Posicao posicaoDestino) => RetornarMovimentosPossiveis()[posicaoDestino.Linha, posicaoDestino.Coluna];
+
         public void IncrementarMovimento() => QuantidadeMovimento++;
 
         public abstract bool[,] RetornarMovimentosPossiveis();
