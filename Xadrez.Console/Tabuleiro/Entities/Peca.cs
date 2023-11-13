@@ -1,6 +1,6 @@
 ﻿using Xadrez.ConsoleApp.Tabuleiro.Enums;
 
-namespace Xadrez.ConsoleApp.Tabuleiro
+namespace Xadrez.ConsoleApp.Tabuleiro.Entities
 {
     internal abstract class Peca
     {

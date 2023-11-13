@@ -1,11 +1,11 @@
-﻿using Xadrez.ConsoleApp.Tabuleiro;
+﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
 
-namespace Xadrez.ConsoleApp.Xadrez.Pecas
+namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
 {
-    internal class Peao : Peca
+    internal class Peao : Tab.Peca
     {
-        public Peao(Cor cor, Tabuleiro.Tabuleiro tabuleiro)
+        public Peao(Cor cor, Tab.Tabuleiro tabuleiro)
             : base(cor, tabuleiro)
         {
         }
@@ -15,24 +15,24 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
             bool[,] movimentosPossiveis = new bool[Tabuleiro.Linha, Tabuleiro.Coluna];
 
             var qtdLinhasPermitdoMover = QuantidadeMovimento == 0 ? 2 : 1;
-            int linhaAnaliseAtual = Cor == Cor.Branca ? Posicao.Linha + qtdLinhasPermitdoMover : Posicao.Linha - qtdLinhasPermitdoMover;
-            
+            int linhaAnaliseAtual = Cor == Cor.Branca ? Posicao.Linha - qtdLinhasPermitdoMover : Posicao.Linha + qtdLinhasPermitdoMover;
+
             bool continuarAnalise()
             {
-                if (Cor == Cor.Branca && linhaAnaliseAtual > Posicao.Linha)
+                if (Cor == Cor.Branca && linhaAnaliseAtual < Posicao.Linha)
                     return true;
 
-                if (Cor == Cor.Preta && linhaAnaliseAtual < Posicao.Linha)
+                if (Cor == Cor.Preta && linhaAnaliseAtual > Posicao.Linha)
                     return true;
 
                 return false;
             }
 
-            int avancarLinha() => Cor == Cor.Branca ? linhaAnaliseAtual - 1 : linhaAnaliseAtual + 1;
+            int avancarLinha() => Cor == Cor.Branca ? linhaAnaliseAtual + 1 : linhaAnaliseAtual - 1;
 
             while (continuarAnalise())
             {
-                Tabuleiro.Posicao posicao = new(linhaAnaliseAtual, Posicao.Coluna);
+                Tab.Posicao posicao = new(linhaAnaliseAtual, Posicao.Coluna);
 
                 if (ValidarMovimento(posicao))
                     movimentosPossiveis[linhaAnaliseAtual, Posicao.Coluna] = true;

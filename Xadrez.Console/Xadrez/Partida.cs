@@ -1,27 +1,28 @@
-﻿using Xadrez.ConsoleApp.Tabuleiro;
+﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
 using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
-using Xadrez.ConsoleApp.Xadrez.Pecas;
+using Xadrez.ConsoleApp.Xadrez.Entities.Pecas;
+using Xadrez.ConsoleApp.Xadrez.Entities;
 
 namespace Xadrez.ConsoleApp.Xadrez
 {
     internal class Partida
     {
-        public Tabuleiro.Tabuleiro Tabuleiro { get; private set; }
+        public Tab.Tabuleiro Tabuleiro { get; private set; }
         public int Turno { get; private set; }
         public Cor JogadorAtual { get; set; }
         public bool Finalizada { get; private set; }
 
         public Partida()
         {
-            Tabuleiro = new Tabuleiro.Tabuleiro(linha: 8, coluna: 8);
+            Tabuleiro = new Tab.Tabuleiro(linha: 8, coluna: 8);
             Turno = 1;
             JogadorAtual = Cor.Branca;
 
             ColocarPecas();
         }
 
-        public Posicao ObterPosicao(bool origem = true)
+        public PosicaoXadrez ObterPosicao(bool origem = true)
         {
             Console.Write($"Posição de {(origem ? "origem" : "destino")}: ");
             string userInput = Console.ReadLine();
@@ -29,15 +30,15 @@ namespace Xadrez.ConsoleApp.Xadrez
             char coluna = userInput[0];
             int linha = int.Parse(userInput[1].ToString());
 
-            return new Posicao(linha, coluna);
+            return new PosicaoXadrez(linha, coluna);
         }
 
-        public void ExecutarMovimento(Posicao origem, Posicao destino)
+        public void ExecutarMovimento(PosicaoXadrez origem, PosicaoXadrez destino)
         {
             var posicaoOrigemTabuleiro = origem?.ConverterParaPosicaoTabuleiro();
             var posicaoDestinoTabuleiro = destino?.ConverterParaPosicaoTabuleiro();
 
-            Peca pecaOrigem;
+            Tab.Peca pecaOrigem;
 
             try
             {
@@ -50,7 +51,7 @@ namespace Xadrez.ConsoleApp.Xadrez
                 throw exception;
             }
 
-            Peca pecaDestino;
+            Tab.Peca pecaDestino;
 
             try
             {
@@ -59,7 +60,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             catch (TabuleiroException ex)
             {
                 var exception = new TabuleiroException($"Erro ao retirar peça do destino: {ex.Message}", ex);
-                
+
                 throw exception;
             }
 
@@ -101,10 +102,10 @@ namespace Xadrez.ConsoleApp.Xadrez
 
         private void ColocarTorres(Cor cor = Cor.Branca)
         {
-            Peca peca1 = new Torre(cor, Tabuleiro);
-            Peca peca2 = new Torre(cor, Tabuleiro);
-            Posicao posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'a');
-            Posicao posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'h');
+            Tab.Peca peca1 = new Torre(cor, Tabuleiro);
+            Tab.Peca peca2 = new Torre(cor, Tabuleiro);
+            PosicaoXadrez posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'a');
+            PosicaoXadrez posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'h');
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
@@ -112,10 +113,10 @@ namespace Xadrez.ConsoleApp.Xadrez
 
         private void ColocarCavalos(Cor cor = Cor.Branca)
         {
-            Peca peca1 = new Cavalo(cor, Tabuleiro);
-            Peca peca2 = new Cavalo(cor, Tabuleiro);
-            Posicao posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'b');
-            Posicao posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'g');
+            Tab.Peca peca1 = new Cavalo(cor, Tabuleiro);
+            Tab.Peca peca2 = new Cavalo(cor, Tabuleiro);
+            PosicaoXadrez posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'b');
+            PosicaoXadrez posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'g');
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
@@ -123,10 +124,10 @@ namespace Xadrez.ConsoleApp.Xadrez
 
         private void ColocarBispos(Cor cor = Cor.Branca)
         {
-            Peca peca1 = new Bispo(cor, Tabuleiro);
-            Peca peca2 = new Bispo(cor, Tabuleiro);
-            Posicao posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'c');
-            Posicao posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'f');
+            Tab.Peca peca1 = new Bispo(cor, Tabuleiro);
+            Tab.Peca peca2 = new Bispo(cor, Tabuleiro);
+            PosicaoXadrez posicao1 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'c');
+            PosicaoXadrez posicao2 = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'f');
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
@@ -134,16 +135,16 @@ namespace Xadrez.ConsoleApp.Xadrez
 
         private void ColocarRei(Cor cor = Cor.Branca)
         {
-            Peca peca = new Rei(cor, Tabuleiro);
-            Posicao posicao = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'e');
+            Tab.Peca peca = new Rei(cor, Tabuleiro);
+            PosicaoXadrez posicao = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'e');
 
             Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
         }
 
         private void ColocarDama(Cor cor = Cor.Branca)
         {
-            Peca peca = new Dama(cor, Tabuleiro);
-            Posicao posicao = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'd');
+            Tab.Peca peca = new Dama(cor, Tabuleiro);
+            PosicaoXadrez posicao = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'd');
 
             Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
         }
@@ -152,8 +153,8 @@ namespace Xadrez.ConsoleApp.Xadrez
         {
             for (char i = 'a'; i < 'i'; i++)
             {
-                Peca peca = new Peao(cor, Tabuleiro);
-                Posicao posicao = new(linha: cor == Cor.Branca ? 2 : 7, coluna: i);
+                Tab.Peca peca = new Peao(cor, Tabuleiro);
+                PosicaoXadrez posicao = new(linha: cor == Cor.Branca ? 2 : 7, coluna: i);
                 Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
             }
         }

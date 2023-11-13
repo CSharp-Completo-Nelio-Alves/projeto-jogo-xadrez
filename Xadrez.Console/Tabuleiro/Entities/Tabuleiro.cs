@@ -1,6 +1,6 @@
 ﻿using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
 
-namespace Xadrez.ConsoleApp.Tabuleiro
+namespace Xadrez.ConsoleApp.Tabuleiro.Entities
 {
     internal class Tabuleiro
     {

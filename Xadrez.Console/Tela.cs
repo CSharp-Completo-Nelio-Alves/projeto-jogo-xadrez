@@ -1,21 +1,26 @@
-﻿using Xadrez.ConsoleApp.Tabuleiro;
+﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
 
 namespace Xadrez.ConsoleApp
 {
     internal static class Tela
     {
-        public static void ImprimirTabuleiro(Tabuleiro.Tabuleiro tabuleiro)
+        public static void ImprimirTabuleiro(Tab.Tabuleiro tabuleiro, Tab.Peca pecaSelecionada = null)
         {
+            bool[,] movimentosPossíveis = pecaSelecionada?.RetornarMovimentosPossiveis();
+
             for (int i = 0; i < tabuleiro.Linha ; i++)
             {
                 EscreverIdentificacaoLinha(i);
 
                 for (int j = 0; j < tabuleiro.Coluna; j++)
                 {
-                    var peca = tabuleiro.ObterPeca(new Posicao(i, j));
+                    var peca = tabuleiro.ObterPeca(new Tab.Posicao(i, j));
+                    
+                    bool marcarMovimentoPossivel = movimentosPossíveis is not null && movimentosPossíveis[i, j];
+                    bool marcarPeca = pecaSelecionada is not null && pecaSelecionada.Equals(peca) && pecaSelecionada.Posicao.Equals(peca.Posicao);
 
-                    EscreverPeca(peca);
+                    EscreverPeca(peca, marcarPeca, marcarMovimentoPossivel);
                 }
 
                 Console.WriteLine();
@@ -37,9 +42,12 @@ namespace Xadrez.ConsoleApp
             Console.ResetColor();
         }
 
-        private static void EscreverPeca(Peca peca)
+        private static void EscreverPeca(Tab.Peca peca, bool marcarPeca = false, bool marcarMovimentoPossivel = false)
         {
-            Console.BackgroundColor = ConsoleColor.DarkGray;
+            if (marcarMovimentoPossivel)
+                Console.BackgroundColor = ConsoleColor.Blue;
+            else
+                Console.BackgroundColor = ConsoleColor.DarkGray;
 
             if (peca is null)
                 Console.ForegroundColor = ConsoleColor.Gray;
@@ -48,7 +56,7 @@ namespace Xadrez.ConsoleApp
             else
                 Console.ForegroundColor = ConsoleColor.White;
 
-            Console.Write($" {(peca is null ? "-" : peca.ToString())} ");
+            Console.Write($"{(peca is null ? " - " : marcarPeca ? $"[{peca}]" : $" {peca} ")}");
 
             Console.ResetColor();
         }

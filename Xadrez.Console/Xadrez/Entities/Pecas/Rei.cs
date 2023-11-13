@@ -1,11 +1,11 @@
-﻿using Xadrez.ConsoleApp.Tabuleiro;
+﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
 
-namespace Xadrez.ConsoleApp.Xadrez.Pecas
+namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
 {
-    internal class Rei : Peca
+    internal class Rei : Tab.Peca
     {
-        public Rei(Cor cor, Tabuleiro.Tabuleiro tabuleiro)
+        public Rei(Cor cor, Tab.Tabuleiro tabuleiro)
             : base(cor, tabuleiro)
         {
         }
@@ -18,7 +18,7 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
             {
                 for (int j = Posicao.Coluna - 1; j <= Posicao.Coluna + 1; j++)
                 {
-                    Tabuleiro.Posicao posicao = new(i, j);
+                    Tab.Posicao posicao = new(i, j);
 
                     if (ValidarMovimento(posicao))
                         movimentosPossiveis[i, j] = true;

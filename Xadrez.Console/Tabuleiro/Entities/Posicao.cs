@@ -1,4 +1,4 @@
-﻿namespace Xadrez.ConsoleApp.Tabuleiro
+﻿namespace Xadrez.ConsoleApp.Tabuleiro.Entities
 {
     internal class Posicao
     {
@@ -7,7 +7,7 @@
 
         public Posicao()
         {
-            
+
         }
 
         public Posicao(int linha, int coluna)

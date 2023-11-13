@@ -1,4 +1,5 @@
 ﻿using Xadrez.ConsoleApp;
+using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
 using Xadrez.ConsoleApp.Xadrez;
 
@@ -13,10 +14,16 @@ try
 			Tela.ImprimirTabuleiro(partida.Tabuleiro);
 
 			Console.WriteLine("\n");
-			var origem = partida.ObterPosicao();
-			var destino = partida.ObterPosicao(origem: false);
+			var posicaoOrigem = partida.ObterPosicao();
+			var pecaSelecionada = partida.Tabuleiro.ObterPeca(posicaoOrigem.ConverterParaPosicaoTabuleiro());
 
-			partida.ExecutarMovimento(origem, destino);
+			Console.Clear();
+			Tela.ImprimirTabuleiro(partida.Tabuleiro, pecaSelecionada);
+            Console.WriteLine("\n");
+
+            var destino = partida.ObterPosicao(origem: false);
+
+			partida.ExecutarMovimento(posicaoOrigem, destino);
 			Console.Clear();
 		}
 		catch (TabuleiroException ex)

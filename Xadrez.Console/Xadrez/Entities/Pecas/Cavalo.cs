@@ -1,11 +1,11 @@
-﻿using Xadrez.ConsoleApp.Tabuleiro;
+﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
 
-namespace Xadrez.ConsoleApp.Xadrez.Pecas
+namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
 {
-    internal class Cavalo : Peca
+    internal class Cavalo : Tab.Peca
     {
-        public Cavalo(Cor cor, Tabuleiro.Tabuleiro tabuleiro)
+        public Cavalo(Cor cor, Tab.Tabuleiro tabuleiro)
             : base(cor, tabuleiro)
         {
         }
@@ -14,7 +14,7 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
         {
             var movimentosPossiveis = new bool[Tabuleiro.Linha, Tabuleiro.Coluna];
 
-            void atualizarMovimentosPossiveis(Tabuleiro.Posicao posicao)
+            void atualizarMovimentosPossiveis(Tab.Posicao posicao)
             {
                 if (ValidarMovimento(posicao))
                     movimentosPossiveis[posicao.Linha, posicao.Coluna] = true;
@@ -24,7 +24,7 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
             {
                 if (i == Posicao.Linha - 2 || i == Posicao.Linha + 2)
                 {
-                    Tabuleiro.Posicao posicao = new(i, Posicao.Coluna - 1);
+                    Tab.Posicao posicao = new(i, Posicao.Coluna - 1);
 
                     atualizarMovimentosPossiveis(posicao);
 
@@ -34,7 +34,7 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
                 }
                 else
                 {
-                    Tabuleiro.Posicao posicao = new(i, Posicao.Coluna - 2);
+                    Tab.Posicao posicao = new(i, Posicao.Coluna - 2);
 
                     atualizarMovimentosPossiveis(posicao);
 
@@ -51,3 +51,4 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
         public override string ToString() => "C";
     }
 }
+

@@ -1,11 +1,11 @@
-﻿using Xadrez.ConsoleApp.Tabuleiro;
+﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
 
-namespace Xadrez.ConsoleApp.Xadrez.Pecas
+namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
 {
-    internal class Torre : Peca
+    internal class Torre : Tab.Peca
     {
-        public Torre(Cor cor, Tabuleiro.Tabuleiro tabuleiro)
+        public Torre(Cor cor, Tab.Tabuleiro tabuleiro)
             : base(cor, tabuleiro)
         {
         }
@@ -17,7 +17,7 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
             // Movimento Vertical
             for (int i = 0; i < Tabuleiro.Linha; i++)
             {
-                Tabuleiro.Posicao posicao = new(i, Posicao.Coluna);
+                Tab.Posicao posicao = new(i, Posicao.Coluna);
 
                 if (ValidarMovimento(posicao))
                     movimentosPossiveis[posicao.Linha, posicao.Coluna] = true;
@@ -26,7 +26,7 @@ namespace Xadrez.ConsoleApp.Xadrez.Pecas
             // Movimento Horizontal
             for (int i = 0; i < Tabuleiro.Coluna; i++)
             {
-                Tabuleiro.Posicao posicao = new(Posicao.Linha, i);
+                Tab.Posicao posicao = new(Posicao.Linha, i);
 
                 if (ValidarMovimento(posicao))
                     movimentosPossiveis[posicao.Linha, posicao.Coluna] = true;
