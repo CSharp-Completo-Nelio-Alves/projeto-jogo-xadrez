@@ -51,6 +51,9 @@ namespace Xadrez.ConsoleApp.Xadrez
                 throw exception;
             }
 
+            if (pecaOrigem is null)
+                throw new TabuleiroException("Não existe peça na posição de origem");
+
             Tab.Peca pecaDestino;
 
             try
