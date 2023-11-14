@@ -16,6 +16,7 @@ namespace Xadrez.ConsoleApp.Xadrez
         public int Turno { get; private set; }
         public Cor JogadorAtual { get; private set; }
         public bool Finalizada { get; private set; }
+        public bool ReiEmXeque { get; private set; }
 
         public Partida()
         {
@@ -41,8 +42,7 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             Console.Clear();
 
-            Tela.ImprimirCabecalho(this);
-            Tela.ImprimirTabuleiro(Tabuleiro, pecaSelecionada);
+            Tela.ImprimirPartida(this, pecaSelecionada);
 
             Console.WriteLine("\n");
 
@@ -68,6 +68,7 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             Turno++;
             AlterarJogadorAtual();
+            ReiEmXeque = ValidarSeReiEstaEmXeque(JogadorAtual);
         }
 
         public IEnumerable<Tab.Peca> ObterPecasCapturadas(Cor cor) => _pecasCapturada.Where(p => p.Cor == cor);

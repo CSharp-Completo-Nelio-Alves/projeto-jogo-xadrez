@@ -1,11 +1,18 @@
 ﻿using Tab = Xadrez.ConsoleApp.Tabuleiro.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Enums;
 using Xadrez.ConsoleApp.Xadrez;
+using Xadrez.ConsoleApp.Tabuleiro.Entities;
 
 namespace Xadrez.ConsoleApp
 {
     internal static class Tela
     {
+        public static void ImprimirPartida(Partida partida, Peca pecaSelecionada = null)
+        {
+            ImprimirCabecalho(partida);
+            ImprimirTabuleiro(partida.Tabuleiro, pecaSelecionada);
+        }
+
         public static void ImprimirTabuleiro(Tab.Tabuleiro tabuleiro, Tab.Peca pecaSelecionada = null)
         {
             bool[,] movimentosPossíveis = pecaSelecionada?.RetornarMovimentosPossiveis();
@@ -51,6 +58,9 @@ namespace Xadrez.ConsoleApp
 
             ImprimirPecasCapturadas(partida);
             Console.WriteLine();
+
+            if (partida.ReiEmXeque)
+                ImprimirMensagem("REI EM XEQUE!\n");
         }
 
         public static void ImprimirMensagem(string mensagem, bool ehError = false)

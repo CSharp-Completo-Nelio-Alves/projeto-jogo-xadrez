@@ -8,8 +8,7 @@ while (!partida.Finalizada)
 {
     try
     {
-        Tela.ImprimirCabecalho(partida);
-        Tela.ImprimirTabuleiro(partida.Tabuleiro);
+        Tela.ImprimirPartida(partida);
 
         Console.WriteLine("\n");
 
