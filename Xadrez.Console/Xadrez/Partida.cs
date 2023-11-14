@@ -3,12 +3,14 @@ using Xadrez.ConsoleApp.Tabuleiro.Enums;
 using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
 using Xadrez.ConsoleApp.Xadrez.Entities.Pecas;
 using Xadrez.ConsoleApp.Xadrez.Entities;
+using Xadrez.ConsoleApp.Tabuleiro.Entities;
 
 namespace Xadrez.ConsoleApp.Xadrez
 {
     internal class Partida
     {
         private readonly List<Tab.Peca> _pecasCapturada;
+        private readonly List<Tab.Peca> _pecasEmJogo;
 
         public Tab.Tabuleiro Tabuleiro { get; private set; }
         public int Turno { get; private set; }
@@ -22,6 +24,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             JogadorAtual = Cor.Branca;
 
             _pecasCapturada = new List<Tab.Peca>();
+            _pecasEmJogo = new List<Tab.Peca>();
 
             ColocarPecas();
         }
@@ -54,7 +57,14 @@ namespace Xadrez.ConsoleApp.Xadrez
             if (!pecaSelecionada.ValidarSePodeMoverPara(posicaoDestino.ConverterParaPosicaoTabuleiro()))
                 throw new TabuleiroException($"A peça da posição {posicaoOrigem} não pode se mover para a posição {posicaoDestino}");
 
-            ExecutarMovimento(posicaoOrigem, posicaoDestino);
+            var pecaCapturada = ExecutarMovimento(posicaoOrigem, posicaoDestino);
+
+            if (ValidarSeReiEstaEmXeque(JogadorAtual))
+            {
+                DesfazerMovimento(pecaSelecionada, posicaoOrigem.ConverterParaPosicaoTabuleiro(), pecaCapturada);
+
+                throw new TabuleiroException($"Você não pode movimentar a peça da posição {posicaoOrigem} para a posição {posicaoDestino}, pois colocará seu rei em Xeque");
+            }
 
             Turno++;
             AlterarJogadorAtual();
@@ -86,7 +96,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             }
         }
 
-        private void ExecutarMovimento(PosicaoXadrez origem, PosicaoXadrez destino)
+        private Peca ExecutarMovimento(PosicaoXadrez origem, PosicaoXadrez destino)
         {
             var posicaoOrigemTabuleiro = origem?.ConverterParaPosicaoTabuleiro();
             var posicaoDestinoTabuleiro = destino?.ConverterParaPosicaoTabuleiro();
@@ -126,7 +136,40 @@ namespace Xadrez.ConsoleApp.Xadrez
             pecaOrigem.IncrementarMovimento();
 
             if (pecaCapturada is not null)
+            {
                 _pecasCapturada.Add(pecaCapturada);
+                var result = _pecasEmJogo.Remove(pecaCapturada);
+            }
+
+            return pecaCapturada;
+        }
+
+        private void DesfazerMovimento(Peca peca, Posicao posicaoOrigem, Peca pecaCapturada = null)
+        {
+            var posicaoAtual = peca.Posicao;
+
+            Tabuleiro.RetirarPeca(peca.Posicao);
+            Tabuleiro.ColocarPeca(peca, posicaoOrigem);
+            peca.DecrementarMovimento();
+
+            if (pecaCapturada is not null)
+            {
+                Tabuleiro.ColocarPeca(pecaCapturada, posicaoAtual);
+                _pecasEmJogo.Add(pecaCapturada);
+            }
+        }
+
+        private bool ValidarSeReiEstaEmXeque(Cor cor)
+        {
+            var rei = _pecasEmJogo.First(p => p.Cor == cor && p is Rei);
+
+            foreach (var peca in _pecasEmJogo.Where(p => p.Cor != cor))
+            {
+                if (peca.ValidarSePodeMoverPara(rei.Posicao))
+                    return true;
+            }
+
+            return false;
         }
 
         #endregion
@@ -189,6 +232,9 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
+
+            _pecasEmJogo.Add(peca1);
+            _pecasEmJogo.Add(peca2);
         }
 
         private void ColocarCavalos(Cor cor = Cor.Branca)
@@ -200,6 +246,9 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
+
+            _pecasEmJogo.Add(peca1);
+            _pecasEmJogo.Add(peca2);
         }
 
         private void ColocarBispos(Cor cor = Cor.Branca)
@@ -211,6 +260,9 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             Tabuleiro.ColocarPeca(peca1, posicao1.ConverterParaPosicaoTabuleiro());
             Tabuleiro.ColocarPeca(peca2, posicao2.ConverterParaPosicaoTabuleiro());
+
+            _pecasEmJogo.Add(peca1);
+            _pecasEmJogo.Add(peca2);
         }
 
         private void ColocarRei(Cor cor = Cor.Branca)
@@ -219,6 +271,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             PosicaoXadrez posicao = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'e');
 
             Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
+            _pecasEmJogo.Add(peca);
         }
 
         private void ColocarDama(Cor cor = Cor.Branca)
@@ -227,6 +280,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             PosicaoXadrez posicao = new(linha: cor == Cor.Branca ? 1 : 8, coluna: 'd');
 
             Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
+            _pecasEmJogo.Add(peca);
         }
 
         private void ColocarPeoes(Cor cor = Cor.Branca)
@@ -235,7 +289,9 @@ namespace Xadrez.ConsoleApp.Xadrez
             {
                 Tab.Peca peca = new Peao(cor, Tabuleiro);
                 PosicaoXadrez posicao = new(linha: cor == Cor.Branca ? 2 : 7, coluna: i);
+                
                 Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
+                _pecasEmJogo.Add(peca);
             }
         }
 

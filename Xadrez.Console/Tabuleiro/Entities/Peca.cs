@@ -51,6 +51,7 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
         public bool ValidarSePodeMoverPara(Posicao posicaoDestino) => RetornarMovimentosPossiveis()[posicaoDestino.Linha, posicaoDestino.Coluna];
 
         public void IncrementarMovimento() => QuantidadeMovimento++;
+        public void DecrementarMovimento() => QuantidadeMovimento--;
 
         public abstract bool[,] RetornarMovimentosPossiveis();
 
@@ -59,7 +60,7 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
         public override int GetHashCode()
         {
             int baseNumber = 5;
-            int hashAux = Cor.GetHashCode() + GetType().GetHashCode();
+            int hashAux = Cor.GetHashCode() + Posicao.GetHashCode();
 
             return hashAux * baseNumber;
         }
@@ -80,7 +81,7 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
 
             var other = obj as Peca;
 
-            return Cor.Equals(other.Cor);
+            return Cor.Equals(other.Cor) && Posicao.Equals(other.Posicao);
         }
 
         public static bool operator ==(Peca left, Peca right)
@@ -88,7 +89,7 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
             if (left is null || right is null)
                 return false;
 
-            return Equals(left, right) || left.GetType() == right.GetType() && left.Cor == right.Cor;
+            return Equals(left, right) || left.GetType() == right.GetType() && left.Cor == right.Cor && left.Posicao == right.Posicao;
         }
 
         public static bool operator !=(Peca left, Peca right) => !(left == right);
