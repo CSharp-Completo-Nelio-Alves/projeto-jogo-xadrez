@@ -55,6 +55,23 @@ namespace Xadrez.ConsoleApp.Tabuleiro.Entities
 
         public abstract bool[,] RetornarMovimentosPossiveis();
 
+        public List<Posicao> RetornarPosicoesParaMovimento()
+        {
+            var lista = new List<Posicao>();
+            var movimentosPossiveis = RetornarMovimentosPossiveis();
+
+            for (var i = 0; i < movimentosPossiveis.GetLength(0); i++)
+            {
+                for (var j = 0; j < movimentosPossiveis.GetLength(1); j++)
+                {
+                    if (movimentosPossiveis[i, j])
+                        lista.Add(new Posicao(i, j));
+                }
+            }
+
+            return lista;
+        }
+
         #region Métodos de Comparação
 
         public override int GetHashCode()

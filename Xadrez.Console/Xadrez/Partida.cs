@@ -4,6 +4,7 @@ using Xadrez.ConsoleApp.Tabuleiro.Exceptions;
 using Xadrez.ConsoleApp.Xadrez.Entities.Pecas;
 using Xadrez.ConsoleApp.Xadrez.Entities;
 using Xadrez.ConsoleApp.Tabuleiro.Entities;
+using System.Security.Cryptography;
 
 namespace Xadrez.ConsoleApp.Xadrez
 {
@@ -33,10 +34,7 @@ namespace Xadrez.ConsoleApp.Xadrez
         public void RealizarJogada()
         {
             var posicaoOrigem = ObterPosicao();
-            var pecaSelecionada = Tabuleiro.ObterPeca(posicaoOrigem.ConverterParaPosicaoTabuleiro());
-
-            if (pecaSelecionada is null)
-                throw new TabuleiroException($"Não existe peça na posição {posicaoOrigem}");
+            var pecaSelecionada = Tabuleiro.ObterPeca(posicaoOrigem.ConverterParaPosicaoTabuleiro()) ?? throw new TabuleiroException($"Não existe peça na posição {posicaoOrigem}");
 
             ValidarPecaSelecionada(pecaSelecionada);
 
@@ -63,12 +61,38 @@ namespace Xadrez.ConsoleApp.Xadrez
             {
                 DesfazerMovimento(pecaSelecionada, posicaoOrigem.ConverterParaPosicaoTabuleiro(), pecaCapturada);
 
-                throw new TabuleiroException($"Você não pode movimentar a peça da posição {posicaoOrigem} para a posição {posicaoDestino}, pois colocará seu rei em Xeque");
+                string mensagemException;
+
+                if (ReiEmXeque)
+                    mensagemException = "Seu rei está em xeque. Retire-o dessa situação";
+                else
+                    mensagemException = $"Você não pode movimentar a peça da posição {posicaoOrigem} para a posição {posicaoDestino}, pois colocará seu rei em Xeque";
+
+                throw new TabuleiroException(mensagemException);
+            }
+
+            if (ValidarSeReiEstaEmXeque(RetornarAdversario()))
+            {
+                ReiEmXeque = true;
+
+                if (ValidarXequeMate(RetornarAdversario()))
+                {
+                    Finalizada = true;
+
+                    Console.Clear();
+                    Tela.ImprimirPartida(this, pecaSelecionada);
+                    Console.WriteLine("\n");
+                    Tela.ImprimirMensagem("XEQUE-MATE!!!");
+                    Tela.ImprimirMensagem($"\nPartida Finalizada. O vencedor são as Peças {JogadorAtual}");
+
+                    Console.ReadKey();
+
+                    return;
+                }
             }
 
             Turno++;
             AlterarJogadorAtual();
-            ReiEmXeque = ValidarSeReiEstaEmXeque(JogadorAtual);
         }
 
         public IEnumerable<Tab.Peca> ObterPecasCapturadas(Cor cor) => _pecasCapturada.Where(p => p.Cor == cor);
@@ -155,6 +179,7 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             if (pecaCapturada is not null)
             {
+                _pecasCapturada.Remove(pecaCapturada);
                 Tabuleiro.ColocarPeca(pecaCapturada, posicaoAtual);
                 _pecasEmJogo.Add(pecaCapturada);
             }
@@ -171,6 +196,31 @@ namespace Xadrez.ConsoleApp.Xadrez
             }
 
             return false;
+        }
+
+        private Cor RetornarAdversario() => JogadorAtual == Cor.Branca ? Cor.Preta : Cor.Branca;
+
+        private bool ValidarXequeMate(Cor cor)
+        {
+            if (!ReiEmXeque)
+                return false;
+
+            foreach (var peca in _pecasEmJogo.Where(p => p.Cor == cor))
+            {
+                var posicaoOrigem = peca.Posicao;
+
+                foreach (var posicaoDestino in peca.RetornarPosicoesParaMovimento())
+                {
+                    var pecaCapturada = ExecutarMovimento(new PosicaoXadrez(posicaoOrigem), new PosicaoXadrez(posicaoDestino));
+
+                    if (!ValidarSeReiEstaEmXeque(cor))
+                        return false;
+
+                    DesfazerMovimento(peca, posicaoOrigem, pecaCapturada);
+                }
+            }
+
+            return true;
         }
 
         #endregion
