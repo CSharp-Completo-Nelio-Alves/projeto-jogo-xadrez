@@ -73,7 +73,10 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             if (ValidarSeReiEstaEmXeque(RetornarAdversario()))
             {
+                var reiAdversario = _pecasEmJogo.Find(p => p is Rei && p.Cor == RetornarAdversario()) as Rei;
+
                 ReiEmXeque = true;
+                reiAdversario.EmXeque = true;
 
                 if (ValidarXequeMate(RetornarAdversario()))
                 {
