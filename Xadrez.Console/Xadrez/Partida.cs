@@ -55,11 +55,12 @@ namespace Xadrez.ConsoleApp.Xadrez
             if (!pecaSelecionada.ValidarSePodeMoverPara(posicaoDestino.ConverterParaPosicaoTabuleiro()))
                 throw new TabuleiroException($"A peça da posição {posicaoOrigem} não pode se mover para a posição {posicaoDestino}");
 
-            var pecaCapturada = ExecutarMovimento(posicaoOrigem, posicaoDestino);
+            var ehMovimentoEspecial = ValidarSeMovimentoEspecial(pecaSelecionada, posicaoDestino.ConverterParaPosicaoTabuleiro());
+            var pecaCapturada = ExecutarMovimento(posicaoOrigem, posicaoDestino, ehMovimentoEspecial);
 
             if (ValidarSeReiEstaEmXeque(JogadorAtual))
             {
-                DesfazerMovimento(pecaSelecionada, posicaoOrigem.ConverterParaPosicaoTabuleiro(), pecaCapturada);
+                DesfazerMovimento(pecaSelecionada, posicaoOrigem.ConverterParaPosicaoTabuleiro(), pecaCapturada, ehMovimentoEspecial);
 
                 string mensagemException;
 
@@ -124,7 +125,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             }
         }
 
-        private Peca ExecutarMovimento(PosicaoXadrez origem, PosicaoXadrez destino)
+        private Peca ExecutarMovimento(PosicaoXadrez origem, PosicaoXadrez destino, bool validarSeMovimentoEspecial = false)
         {
             var posicaoOrigemTabuleiro = origem?.ConverterParaPosicaoTabuleiro();
             var posicaoDestinoTabuleiro = destino?.ConverterParaPosicaoTabuleiro();
@@ -163,6 +164,9 @@ namespace Xadrez.ConsoleApp.Xadrez
             Tabuleiro.ColocarPeca(pecaOrigem, posicaoDestinoTabuleiro);
             pecaOrigem.IncrementarMovimento();
 
+            if (validarSeMovimentoEspecial)
+                ExecutarMovimentoEspecial(pecaOrigem, posicaoOrigemTabuleiro, posicaoDestinoTabuleiro);
+
             if (pecaCapturada is not null)
             {
                 _pecasCapturada.Add(pecaCapturada);
@@ -172,7 +176,40 @@ namespace Xadrez.ConsoleApp.Xadrez
             return pecaCapturada;
         }
 
-        private void DesfazerMovimento(Peca peca, Posicao posicaoOrigem, Peca pecaCapturada = null)
+        private void ExecutarMovimentoEspecial(Peca peca, Posicao posicaoOrigem, Posicao posicaoDestino)
+        {
+            var pecaAux = peca as Rei;
+
+            if (pecaAux is not null)
+                ExecutarMovimentoEspecialRoque(pecaAux);
+        }
+
+        private void ExecutarMovimentoEspecialRoque(Rei rei)
+        {
+            var torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1));
+            var posicaoDestinoTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 1);
+
+            if (torre is null)
+            {
+                torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 2));
+                posicaoDestinoTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1);
+            }
+
+            if (torre is not null)
+                ExecutarMovimento(new PosicaoXadrez(torre.Posicao), new PosicaoXadrez(posicaoDestinoTorre));
+        }
+
+        private bool ValidarSeMovimentoEspecial(Peca peca, Posicao posicaoDestino)
+        {
+            var pecaAux = peca as Rei;
+
+            if (pecaAux is not null && (pecaAux.ValidarSePodeRealizarMovimentoRoquePequeno(posicaoDestino) || pecaAux.ValidarSePodeRealizarMovimentoRoqueGrande(posicaoDestino)))
+                return true;
+
+            return false;
+        }
+
+        private void DesfazerMovimento(Peca peca, Posicao posicaoOrigem, Peca pecaCapturada = null, bool ehMovimentoEspecial = false)
         {
             var posicaoAtual = peca.Posicao;
 
@@ -180,12 +217,38 @@ namespace Xadrez.ConsoleApp.Xadrez
             Tabuleiro.ColocarPeca(peca, posicaoOrigem);
             peca.DecrementarMovimento();
 
+            //if (ehMovimentoEspecial)
+            //    DesfazerMovimentoEspecial(peca);
+
             if (pecaCapturada is not null)
             {
                 _pecasCapturada.Remove(pecaCapturada);
                 Tabuleiro.ColocarPeca(pecaCapturada, posicaoAtual);
                 _pecasEmJogo.Add(pecaCapturada);
             }
+        }
+
+        private void DesfazerMovimentoEspecial(Peca peca)
+        {
+            var pecaAux = peca as Rei;
+
+            if (peca is not null)
+                DesfazerMovimentoRoque(pecaAux);
+        }
+
+        private void DesfazerMovimentoRoque(Rei rei)
+        {
+            var torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1));
+            var posicaoOrigemTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 3);
+
+            if (torre is null)
+            {
+                torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 1));
+                posicaoOrigemTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 4);
+            }
+
+            if (torre is not null)
+                DesfazerMovimento(torre, posicaoOrigemTorre);
         }
 
         private bool ValidarSeReiEstaEmXeque(Cor cor)
@@ -343,7 +406,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             {
                 Tab.Peca peca = new Peao(cor, Tabuleiro);
                 PosicaoXadrez posicao = new(linha: cor == Cor.Branca ? 2 : 7, coluna: i);
-                
+
                 Tabuleiro.ColocarPeca(peca, posicao.ConverterParaPosicaoTabuleiro());
                 _pecasEmJogo.Add(peca);
             }

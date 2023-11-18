@@ -25,6 +25,7 @@ namespace Xadrez.ConsoleApp
                 {
                     var peca = tabuleiro.ObterPeca(new Tab.Posicao(i, j));
                     
+                    // TODO: Corrigir Cavalo na seguinte jogada: D2>D4 / C7>C4 / C1>H6 / D8>A5 (após jogada, cavalo que deveria estar em B1 está em C3)
                     bool marcarMovimentoPossivel = movimentosPossíveis is not null && movimentosPossíveis[i, j];
                     bool marcarPeca = pecaSelecionada is not null && pecaSelecionada.Equals(peca) && pecaSelecionada.Posicao.Equals(peca.Posicao);
 
