@@ -226,8 +226,8 @@ namespace Xadrez.ConsoleApp.Xadrez
             Tabuleiro.ColocarPeca(peca, posicaoOrigem);
             peca.DecrementarMovimento();
 
-            //if (ehMovimentoEspecial)
-            //    DesfazerMovimentoEspecial(peca);
+            if (ehMovimentoEspecial)
+                DesfazerMovimentoEspecial(peca);
 
             if (pecaCapturada is not null)
             {
@@ -247,12 +247,12 @@ namespace Xadrez.ConsoleApp.Xadrez
 
         private void DesfazerMovimentoRoque(Rei rei)
         {
-            var torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1));
+            var torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1)) as Torre;
             var posicaoOrigemTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 3);
 
             if (torre is null)
             {
-                torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 1));
+                torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 1)) as Torre;
                 posicaoOrigemTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 4);
             }
 
