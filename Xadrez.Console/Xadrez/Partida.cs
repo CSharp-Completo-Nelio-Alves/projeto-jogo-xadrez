@@ -72,6 +72,15 @@ namespace Xadrez.ConsoleApp.Xadrez
                 throw new TabuleiroException(mensagemException);
             }
 
+            // Caso o rei tenha sido colocado em xeque pelo adversário na partida anterior e não esteja mais em xeque após movimento na partida atual
+            if (ReiEmXeque)
+            {
+                var reiAtual = _pecasEmJogo.Find(p => p is Rei && p.Cor == JogadorAtual) as Rei;
+
+                ReiEmXeque = false;
+                reiAtual.EmXeque = false;
+            }
+
             if (ValidarSeReiEstaEmXeque(RetornarAdversario()))
             {
                 var reiAdversario = _pecasEmJogo.Find(p => p is Rei && p.Cor == RetornarAdversario()) as Rei;
