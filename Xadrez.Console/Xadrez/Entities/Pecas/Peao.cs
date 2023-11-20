@@ -6,6 +6,8 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
 {
     internal class Peao : Tab.Peca
     {
+        public bool PodeCapturarEnPassant { get; set; }
+
         public Peao(Cor cor, Tab.Tabuleiro tabuleiro)
             : base(cor, tabuleiro)
         {
@@ -87,10 +89,37 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
             MarcarMovimentoCaptura(movimentosPossiveis, posicao);
         }
 
-        private void MarcarMovimentoCaptura(bool[,] movimentosPossiveis, Posicao posicao)
+        private void MarcarMovimentoCaptura(bool[,] movimentosPossiveis, Posicao posicaoDestino)
         {
-            if (base.ValidarMovimento(posicao) && ValidarSeExistePecaAdversaria(posicao))
-                movimentosPossiveis[posicao.Linha, posicao.Coluna] = true;
+            if (base.ValidarMovimento(posicaoDestino) && ValidarSeExistePecaAdversaria(posicaoDestino) || ValidarSePodeRealizarMovimentoEnPassant(posicaoDestino))
+                movimentosPossiveis[posicaoDestino.Linha, posicaoDestino.Coluna] = true;
+        }
+
+        public bool ValidarSePodeRealizarMovimentoEnPassant(Posicao posicaoDestino)
+        {
+            if (!PodeCapturarEnPassant)
+                return false;
+
+            if (Posicao is null)
+                return false;
+
+            if (posicaoDestino.Coluna == Posicao.Coluna)
+                return false;
+
+            if (!ExistePecaAdversariaParaRealizarEnPassant(posicaoDestino))
+                return false;
+
+            return true;
+        }
+
+        private bool ExistePecaAdversariaParaRealizarEnPassant(Posicao posicaoDestino)
+        {
+            var posicaoPeaoAdversario = new Posicao(Posicao.Linha, posicaoDestino.Coluna);
+
+            if (base.ValidarMovimento(posicaoPeaoAdversario) && ValidarSeExistePecaAdversaria(posicaoPeaoAdversario))
+                return true;
+
+            return false;
         }
 
         #endregion
