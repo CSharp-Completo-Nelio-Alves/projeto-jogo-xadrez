@@ -271,18 +271,21 @@ namespace Xadrez.ConsoleApp.Xadrez
             if (!ReiEmXeque)
                 return false;
 
-            foreach (var peca in _pecasEmJogo.Where(p => p.Cor == cor))
+            var pecasTeste = _pecasEmJogo.Where(p => p.Cor == cor).ToList().AsReadOnly();
+
+            foreach (var peca in pecasTeste)
             {
                 var posicaoOrigem = peca.Posicao;
 
                 foreach (var posicaoDestino in peca.RetornarPosicoesParaMovimento())
                 {
                     var pecaCapturada = ExecutarMovimento(new PosicaoXadrez(posicaoOrigem), new PosicaoXadrez(posicaoDestino));
-
-                    if (!ValidarSeReiEstaEmXeque(cor))
-                        return false;
+                    var movimentoTirouReiDoXeque = !ValidarSeReiEstaEmXeque(cor);
 
                     DesfazerMovimento(peca, posicaoOrigem, pecaCapturada);
+
+                    if (movimentoTirouReiDoXeque)
+                        return false;
                 }
             }
 
