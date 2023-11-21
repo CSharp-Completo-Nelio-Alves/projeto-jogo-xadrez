@@ -128,8 +128,6 @@ namespace Xadrez.ConsoleApp.Xadrez
 
         #region Métodos Auxiliares
 
-        private void AlterarJogadorAtual() => JogadorAtual = JogadorAtual == Cor.Branca ? Cor.Preta : Cor.Branca;
-
         private PosicaoXadrez ObterPosicao(bool origem = true)
         {
             try
@@ -149,6 +147,25 @@ namespace Xadrez.ConsoleApp.Xadrez
                 throw exception;
             }
         }
+
+        private Cor RetornarCorAdversaria() => JogadorAtual == Cor.Branca ? Cor.Preta : Cor.Branca;
+
+        private void AlterarJogadorAtual() => JogadorAtual = JogadorAtual == Cor.Branca ? Cor.Preta : Cor.Branca;
+
+        private void ValidarPecaSelecionada(Tab.Peca peca)
+        {
+            PosicaoXadrez posicaoXadrez = new(peca.Posicao);
+
+            if (!ValidarSePecaDoJogadorAtual(peca))
+                throw new TabuleiroException($"Você não pode selecionar a peça na posição {posicaoXadrez}");
+
+            if (!peca.ValidarSeExisteMovimentoPossivel())
+                throw new TabuleiroException($"Não existem movimentos possíveis para a peça na posição {posicaoXadrez}");
+        }
+
+        private bool ValidarSePecaDoJogadorAtual(Tab.Peca peca) => peca.Cor == JogadorAtual;
+
+        #region Tratar Movimento
 
         private Peca ExecutarMovimento(PosicaoXadrez origem, PosicaoXadrez destino, bool validarSeMovimentoEspecial = false)
         {
@@ -190,76 +207,6 @@ namespace Xadrez.ConsoleApp.Xadrez
             return pecaCapturada;
         }
 
-        private Peca CapturarPeca(Posicao posicaoDestino)
-        {
-            Peca pecaCapturada = Tabuleiro.RetirarPeca(posicaoDestino);
-
-            if (pecaCapturada is not null)
-            {
-                _pecasCapturada.Add(pecaCapturada);
-                _pecasEmJogo.Remove(pecaCapturada);
-            }
-
-            return pecaCapturada;
-        }
-
-        private Peca ExecutarMovimentoEspecial(Peca peca, Posicao posicaoOrigem, Posicao posicaoDestino)
-        {
-            var rei = peca as Rei;
-
-            if (rei is not null)
-            {
-                ExecutarMovimentoEspecialRoque(rei);
-
-                return null;
-            }
-
-            var peao = peca as Peao;
-
-            if (peao is not null)
-                return ExecutarCapturaEnPassant(posicaoOrigem, posicaoDestino);
-
-            return null;
-        }
-
-        private Peca ExecutarCapturaEnPassant(Posicao posicaoOrigem, Posicao posicaoDestino)
-        {
-            var posicaoPeaoAdversario = new Posicao(posicaoOrigem.Linha, posicaoDestino.Coluna);
-            Peca peaoCapturado = CapturarPeca(posicaoPeaoAdversario) ?? throw new TabuleiroException("Não existe peão adversário que permita realizar captura en-passant.");
-
-            return peaoCapturado;
-        }
-
-        private void ExecutarMovimentoEspecialRoque(Rei rei)
-        {
-            var torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1));
-            var posicaoDestinoTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 1);
-
-            if (torre is null)
-            {
-                torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 2));
-                posicaoDestinoTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1);
-            }
-
-            if (torre is not null)
-                ExecutarMovimento(new PosicaoXadrez(torre.Posicao), new PosicaoXadrez(posicaoDestinoTorre));
-        }
-
-        private bool ValidarSeMovimentoEspecial(Peca peca, Posicao posicaoDestino)
-        {
-            var rei = peca as Rei;
-
-            if (rei is not null && (rei.ValidarSePodeRealizarMovimentoRoquePequeno(posicaoDestino) || rei.ValidarSePodeRealizarMovimentoRoqueGrande(posicaoDestino)))
-                return true;
-
-            var peao = peca as Peao;
-
-            if (peao is not null && peao.ValidarSePodeRealizarMovimentoEnPassant(posicaoDestino))
-                return true;
-
-            return false;
-        }
-
         private void DesfazerMovimento(Peca peca, Posicao posicaoOrigem, Peca pecaCapturada = null, bool ehMovimentoEspecial = false)
         {
             var posicaoAtualDaPecaMovimentada = peca.Posicao;
@@ -279,47 +226,22 @@ namespace Xadrez.ConsoleApp.Xadrez
             }
         }
 
-        private void DesfazerMovimentoEspecial(Peca peca, Posicao posicaoAnterior)
+        private Peca CapturarPeca(Posicao posicaoDestino)
         {
-            var rei = peca as Rei;
+            Peca pecaCapturada = Tabuleiro.RetirarPeca(posicaoDestino);
 
-            if (rei is not null)
+            if (pecaCapturada is not null)
             {
-                DesfazerMovimentoRoque(rei);
-
-                return;
+                _pecasCapturada.Add(pecaCapturada);
+                _pecasEmJogo.Remove(pecaCapturada);
             }
 
-            var peao = peca as Peao;
-
-            if (peao is not null)
-                DesfazerCapturaEnPassant(peao, posicaoAnterior);
+            return pecaCapturada;
         }
 
-        private void DesfazerCapturaEnPassant(Peao peao, Posicao posicaoAnterior)
-        {
-            var peaoCapturado = _pecasCapturada.FirstOrDefault(p => p is Peao && p.Cor == RetornarCorAdversaria()) as Peao ??
-                throw new TabuleiroException("Nenhum peão adversário captura para desfazer captura en-passant");
+        #endregion
 
-            var posicaoPeaoCapturado = new Posicao(peao.Posicao.Linha, posicaoAnterior.Coluna);
-            
-            Tabuleiro.ColocarPeca(peaoCapturado, posicaoPeaoCapturado);
-        }
-
-        private void DesfazerMovimentoRoque(Rei rei)
-        {
-            var torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1)) as Torre;
-            var posicaoOrigemTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 3);
-
-            if (torre is null)
-            {
-                torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 1)) as Torre;
-                posicaoOrigemTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 4);
-            }
-
-            if (torre is not null)
-                DesfazerMovimento(torre, posicaoOrigemTorre);
-        }
+        #region Validar Xeque
 
         private bool ValidarSeReiEstaEmXeque(Cor cor)
         {
@@ -333,8 +255,6 @@ namespace Xadrez.ConsoleApp.Xadrez
 
             return false;
         }
-
-        private Cor RetornarCorAdversaria() => JogadorAtual == Cor.Branca ? Cor.Preta : Cor.Branca;
 
         private bool ValidarXequeMate(Cor cor)
         {
@@ -360,6 +280,115 @@ namespace Xadrez.ConsoleApp.Xadrez
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region Jogadas Especiais
+
+        private Peca ExecutarMovimentoEspecial(Peca peca, Posicao posicaoOrigem, Posicao posicaoDestino)
+        {
+            var rei = peca as Rei;
+
+            if (rei is not null)
+            {
+                ExecutarMovimentoEspecialRoque(rei);
+
+                return null;
+            }
+
+            var peao = peca as Peao;
+
+            if (peao is not null)
+                return ExecutarCapturaEnPassant(posicaoOrigem, posicaoDestino);
+
+            return null;
+        }
+
+        private void DesfazerMovimentoEspecial(Peca peca, Posicao posicaoAnterior)
+        {
+            var rei = peca as Rei;
+
+            if (rei is not null)
+            {
+                DesfazerMovimentoRoque(rei);
+
+                return;
+            }
+
+            var peao = peca as Peao;
+
+            if (peao is not null)
+                DesfazerCapturaEnPassant(peao, posicaoAnterior);
+        }
+
+        private bool ValidarSeMovimentoEspecial(Peca peca, Posicao posicaoDestino)
+        {
+            var rei = peca as Rei;
+
+            if (rei is not null && (rei.ValidarSePodeRealizarMovimentoRoquePequeno(posicaoDestino) || rei.ValidarSePodeRealizarMovimentoRoqueGrande(posicaoDestino)))
+                return true;
+
+            var peao = peca as Peao;
+
+            if (peao is not null && peao.ValidarSePodeRealizarMovimentoEnPassant(posicaoDestino))
+                return true;
+
+            return false;
+        }
+
+        #region Roque
+
+        private void ExecutarMovimentoEspecialRoque(Rei rei)
+        {
+            var torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1));
+            var posicaoDestinoTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 1);
+
+            if (torre is null)
+            {
+                torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 2));
+                posicaoDestinoTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1);
+            }
+
+            if (torre is not null)
+                ExecutarMovimento(new PosicaoXadrez(torre.Posicao), new PosicaoXadrez(posicaoDestinoTorre));
+        }
+
+        private void DesfazerMovimentoRoque(Rei rei)
+        {
+            var torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 1)) as Torre;
+            var posicaoOrigemTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna + 3);
+
+            if (torre is null)
+            {
+                torre = Tabuleiro.ObterPeca(new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 1)) as Torre;
+                posicaoOrigemTorre = new Posicao(rei.Posicao.Linha, rei.Posicao.Coluna - 4);
+            }
+
+            if (torre is not null)
+                DesfazerMovimento(torre, posicaoOrigemTorre);
+        }
+
+        #endregion
+
+        #region En-Passant
+
+        private Peca ExecutarCapturaEnPassant(Posicao posicaoOrigem, Posicao posicaoDestino)
+        {
+            var posicaoPeaoAdversario = new Posicao(posicaoOrigem.Linha, posicaoDestino.Coluna);
+            Peca peaoCapturado = CapturarPeca(posicaoPeaoAdversario) ?? throw new TabuleiroException("Não existe peão adversário que permita realizar captura en-passant.");
+
+            return peaoCapturado;
+        }
+
+        private void DesfazerCapturaEnPassant(Peao peao, Posicao posicaoAnterior)
+        {
+            var peaoCapturado = _pecasCapturada.FirstOrDefault(p => p is Peao && p.Cor == RetornarCorAdversaria()) as Peao ??
+                throw new TabuleiroException("Nenhum peão adversário captura para desfazer captura en-passant");
+
+            var posicaoPeaoCapturado = new Posicao(peao.Posicao.Linha, posicaoAnterior.Coluna);
+
+            Tabuleiro.ColocarPeca(peaoCapturado, posicaoPeaoCapturado);
         }
 
         private void TratarMovimentoEnPassantPeaoAdversario(Peca pecaMovimentada, Posicao posicaoOrigem)
@@ -400,20 +429,7 @@ namespace Xadrez.ConsoleApp.Xadrez
 
         #endregion
 
-        #region Validações
-
-        private void ValidarPecaSelecionada(Tab.Peca peca)
-        {
-            PosicaoXadrez posicaoXadrez = new(peca.Posicao);
-
-            if (!ValidarSePecaDoJogadorAtual(peca))
-                throw new TabuleiroException($"Você não pode selecionar a peça na posição {posicaoXadrez}");
-
-            if (!peca.ValidarSeExisteMovimentoPossivel())
-                throw new TabuleiroException($"Não existem movimentos possíveis para a peça na posição {posicaoXadrez}");
-        }
-
-        private bool ValidarSePecaDoJogadorAtual(Tab.Peca peca) => peca.Cor == JogadorAtual;
+        #endregion
 
         #endregion
 
