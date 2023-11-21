@@ -123,5 +123,16 @@ namespace Xadrez.ConsoleApp.Xadrez.Entities.Pecas
         }
 
         #endregion
+
+        public bool PodeSerPromovido()
+        {
+            if (Cor == Cor.Branca && Posicao.Linha == 0)
+                return true;
+
+            if (Cor == Cor.Preta && Posicao.Linha == Tabuleiro.Linha - 1)
+                return true;
+
+            return false;
+        }
     }
 }

@@ -26,6 +26,6 @@ while (!partida.Finalizada)
     {
         Console.ResetColor();
         Console.Clear();
-        Tela.ImprimirMensagem($"\nUnexpected erro: {ex.Message}\n", ehError: true);
+        Tela.ImprimirMensagem($"\nUnexpected error: {ex.Message}\n", ehError: true);
     }
 }

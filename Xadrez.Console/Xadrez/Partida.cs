@@ -65,7 +65,7 @@ namespace Xadrez.ConsoleApp.Xadrez
             catch (Exception ex)
             {
                 DesfazerMovimento(pecaSelecionada, posicaoOrigem.ConverterParaPosicaoTabuleiro(), pecaCapturada, ehMovimentoEspecial);
-                
+
                 var exception = new TabuleiroException($"Erro ao executar movimento", ex);
 
                 throw exception;
@@ -118,10 +118,75 @@ namespace Xadrez.ConsoleApp.Xadrez
             }
 
             DesfazerMarcacaoMovimentoEnPassant(JogadorAtual);
-            TratarMovimentoEnPassantPeaoAdversario(pecaSelecionada, posicaoOrigem.ConverterParaPosicaoTabuleiro());
+
+            if (ValidarPromocao(pecaSelecionada))
+            {
+                Console.Clear();
+                ExecutarPromocao(pecaSelecionada);
+            }
+            else
+                TratarMovimentoEnPassantPeaoAdversario(pecaSelecionada, posicaoOrigem.ConverterParaPosicaoTabuleiro());
 
             Turno++;
             AlterarJogadorAtual();
+        }
+
+        private void ExecutarPromocao(Peca pecaSelecionada)
+        {
+            Peca novaPeca = ObterPecaParaPromocao(pecaSelecionada);
+
+            if (novaPeca is not null)
+            {
+                var posicaoAtual = pecaSelecionada.Posicao;
+
+                _pecasEmJogo.Remove(pecaSelecionada);
+                Tabuleiro.RetirarPeca(posicaoAtual);
+
+                Tabuleiro.ColocarPeca(novaPeca, posicaoAtual);
+                _pecasEmJogo.Add(novaPeca);
+            }
+        }
+
+        private Peca ObterPecaParaPromocao(Peca pecaSelecionada)
+        {
+            while (true)
+            {
+                try
+                {
+                    Tela.ImprimirPartida(this, pecaSelecionada);
+
+                    Console.WriteLine("\n\nPara qual peça promover seu peão:\n");
+
+                    Console.WriteLine("0 - Não promover");
+                    Console.WriteLine("1 - Promover a uma Dama");
+                    Console.WriteLine("2 - Promover a uma Torre");
+                    Console.WriteLine("3 - Promover a um Bispo");
+                    Console.WriteLine("4 - Promover a um Cavalo");
+
+                    Console.Write("\nEscolha uma opção: ");
+
+                    var userInput = Console.ReadLine();
+
+                    var validInput = int.TryParse(userInput, out var opcao);
+
+                    if (!validInput || opcao < 0 || opcao > 4)
+                        throw new TabuleiroException("Opção inválida");
+
+                    return opcao switch
+                    {
+                        1 => new Dama(JogadorAtual, Tabuleiro),
+                        2 => new Torre(JogadorAtual, Tabuleiro),
+                        3 => new Bispo(JogadorAtual, Tabuleiro),
+                        4 => new Cavalo(JogadorAtual, Tabuleiro),
+                        _ => null
+                    };
+                }
+                catch (Exception ex)
+                {
+                    Console.Clear();
+                    Tela.ImprimirMensagem(ex.Message, true);
+                }
+            }
         }
 
         public IEnumerable<Peca> ObterPecasCapturadas(Cor cor) => _pecasCapturada.Where(p => p.Cor == cor);
@@ -428,6 +493,12 @@ namespace Xadrez.ConsoleApp.Xadrez
         }
 
         #endregion
+
+        #endregion
+
+        #region Tratar Promoção
+
+        private bool ValidarPromocao(Peca pecaSelecionada) => pecaSelecionada is Peao && (pecaSelecionada as Peao).PodeSerPromovido();
 
         #endregion
 
